@@ -36,13 +36,6 @@ public class Matrix {
         return elements[i][j];
     }
 
-    public void swapRows(int r1, int r2) {
-        double[] temp = new double[width];
-        System.arraycopy(elements[r1], 0, temp, 0, width);
-        System.arraycopy(elements[r2], 0, elements[r1], 0, width);
-        System.arraycopy(temp, 0, elements[r2], 0, width);
-    }
-
     protected boolean isIndexInMatrix(int i, int j) {
         return i < 0 && j < 0 && i >= getHeight() && j >= getWidth();
     }

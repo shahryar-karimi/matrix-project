@@ -15,7 +15,8 @@ public class MatrixButtonPanel extends JPanel {
     private JButton resultButton;
     private JButton timesButton;
     private JButton luDecompositionButton;
-    private JButton axbSolver;
+    private JButton axbSolverButton;
+    private JButton reduceRowEchelonFormButton;
 
     public MatrixButtonPanel() {
         initComponents();
@@ -23,7 +24,7 @@ public class MatrixButtonPanel extends JPanel {
 
     private void initComponents() {
         this.setBackground(new java.awt.Color(0, 153, 153));
-        this.setLayout(new java.awt.GridLayout(3, 4));
+        this.setLayout(new java.awt.GridLayout(4, 4));
         sumButton = new javax.swing.JButton("Sum");
         multipleButton = new javax.swing.JButton("Multiple");
         transposeButton = new javax.swing.JButton("Transpose");
@@ -35,10 +36,12 @@ public class MatrixButtonPanel extends JPanel {
         resultButton = new javax.swing.JButton("Result");
         timesButton = new JButton("Times");
         luDecompositionButton = new JButton("LU");
-        axbSolver = new JButton("Ax=b");
+        axbSolverButton = new JButton("Ax=b");
+        reduceRowEchelonFormButton = new JButton("RREF");
         JButton[] buttons = new JButton[]{sumButton, multipleButton, timesButton, transposeButton,
                 inverseButton, traceButton, clearButton, innerDotButton,
-                determinantButton, axbSolver, luDecompositionButton, resultButton};
+                determinantButton, axbSolverButton, luDecompositionButton, resultButton,
+                reduceRowEchelonFormButton};
         for (JButton button : buttons) {
             button.setFont(new java.awt.Font("Helvetica Neue", Font.PLAIN, 18));
             this.add(button);
@@ -85,11 +88,15 @@ public class MatrixButtonPanel extends JPanel {
         return luDecompositionButton;
     }
 
-    public JButton getAxbSolver() {
-        return axbSolver;
+    public JButton getAxbSolverButton() {
+        return axbSolverButton;
     }
 
     public JButton getInverseButton() {
         return inverseButton;
+    }
+
+    public JButton getReduceRowEchelonFormButton() {
+        return reduceRowEchelonFormButton;
     }
 }

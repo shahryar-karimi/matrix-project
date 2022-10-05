@@ -4,6 +4,7 @@ import matrix.Matrix;
 import matrix.Matrices;
 import operation.matrixListResultOperation.LUDecomposition;
 import operation.matrixListResultOperation.MatrixListResultOperation;
+import operation.matrixListResultOperation.ReduceRowEchelonForm;
 import operation.matrixResultOperation.*;
 import operation.numberResultOperation.Determinant;
 import operation.numberResultOperation.InnerDot;
@@ -48,13 +49,14 @@ public class MatrixPanel extends JPanel {
         buttonPanel.getMultipleButton().setEnabled(matrixResultOperatorEnabler);
         buttonPanel.getSumButton().setEnabled(matrixResultOperatorEnabler);
         buttonPanel.getInnerDotButton().setEnabled(matrixResultOperatorEnabler);
-        boolean isSquare = Matrices.isSquare(dataPanel.getMatrix());
+        Matrix matrix = dataPanel.getMatrix();
+        boolean isSquare = Matrices.isSquare(matrix);
         buttonPanel.getTraceButton().setEnabled(isSquare);
         buttonPanel.getDeterminantButton().setEnabled(isSquare);
         buttonPanel.getLuDecompositionButton().setEnabled(isSquare);
         buttonPanel.getInverseButton().setEnabled(isSquare);
-        buttonPanel.getAxbSolver()
-                .setEnabled(dataPanel.getMatrix().getWidth() - dataPanel.getMatrix().getHeight() == 1);
+        buttonPanel.getAxbSolverButton()
+                .setEnabled(matrix.getWidth() - matrix.getHeight() == 1);
     }
 
     private void addActionListeners() {
@@ -115,7 +117,7 @@ public class MatrixPanel extends JPanel {
                 System.err.println(ex.getMessage());
             }
         });
-        buttonPanel.getAxbSolver().addActionListener(e -> {
+        buttonPanel.getAxbSolverButton().addActionListener(e -> {
             try {
                 axbSolverActionPerformed();
             } catch (Exception ex) {
@@ -125,6 +127,13 @@ public class MatrixPanel extends JPanel {
         buttonPanel.getInverseButton().addActionListener(e -> {
             try {
                 inverseButtonActionPerformed();
+            } catch (Exception ex) {
+                System.err.println(ex.getMessage());
+            }
+        });
+        buttonPanel.getReduceRowEchelonFormButton().addActionListener(e -> {
+            try {
+                reduceRowEchelonFormButtonActionPerformed();
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
             }
@@ -242,11 +251,20 @@ public class MatrixPanel extends JPanel {
         operateMatrixListResultOperation();
     }
 
+    private void reduceRowEchelonFormButtonActionPerformed() throws Exception {
+        matrixListResultOperation = new ReduceRowEchelonForm();
+        ((ReduceRowEchelonForm) matrixListResultOperation).setMatrix(dataPanel.getMatrix());
+        operateMatrixListResultOperation();
+    }
+
     private void operateMatrixListResultOperation() throws Exception {
         if (matrixListResultOperation.isReadyToOperate()) {
             List<Matrix> matrixList = matrixListResultOperation.operate();
             if (matrixListResultOperation instanceof LUDecomposition)
                 showMatrixList(matrixList, Arrays.asList("L", "U", "Permutation"));
+            else if (matrixListResultOperation instanceof ReduceRowEchelonForm) {
+                showMatrixList(matrixList, Arrays.asList("RREF", "Permutation"));
+            }
             matrixListResultOperation = null;
         }
     }

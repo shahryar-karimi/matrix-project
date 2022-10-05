@@ -3,7 +3,9 @@ package matrix;
 import utils.SpecificMatrixName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class Matrices {
     public static Matrix createMatrix(int height, int width, double fillNumber, SpecificMatrixName comboSelect) {
@@ -150,7 +152,7 @@ public class Matrices {
         double[][] upper = new double[length][length];
         for (int i = 0; i < length; i++) {
             int[] permuteRows = permuteRows(mat, length, i);
-            permutationMatrix.swapRows(permuteRows[0], permuteRows[1]);
+            swapRows(permutationMatrix, permuteRows[0], permuteRows[1]);
             for (int k = i; k < length; k++) {
                 double sum = 0;
                 for (int j = 0; j < i; j++)
@@ -373,5 +375,96 @@ public class Matrices {
             }
         }
         return new Matrix(inverseElements);
+    }
+
+    public static List<Matrix> reduceRowEchelonForm(Matrix matrix) {
+        double[][] resultElements = matrix.getElements().clone();
+        Matrix permutedMatrix = normalizeRows(resultElements);
+        normalizeColumns(resultElements);
+        return Arrays.asList(new Matrix(resultElements), permutedMatrix);
+    }
+
+    private static void normalizeColumns(double[][] elements) {
+        int height = elements.length;
+        int width = elements[0].length;
+        int j = 0;
+        for (int i = 0; i < height; i++) {
+            while (j < width && elements[i][j] == 0)
+                j++;
+            if (j == width) break;
+            linearCombinationOfRows(elements, i, i, 1 / elements[i][j], 0);
+            makeUpperElementsZero(elements, i, j);
+            j++;
+        }
+    }
+
+    private static void makeUpperElementsZero(double[][] elements, int x, int y) {
+        for (int i = 0; i < x; i++) {
+            linearCombinationOfRows(elements, i, x, i, 1, -elements[i][y] / elements[x][y], 0);
+        }
+    }
+
+    private static Matrix normalizeRows(double[][] resultElements) {
+        int height = resultElements.length;
+        int width = resultElements[0].length;
+        Matrix permutedMatrix = createI(height);
+        int j = -1;
+        for (int i = 0; i < height; i++) {
+            j++;
+            if (j == width) break;
+            int index = putMaxElementHighestInColumn(resultElements, i, j);
+            swapRows(permutedMatrix, i, index);
+            if (resultElements[i][j] == 0) {
+                i--;
+            } else {
+                makeBelowElementsZero(resultElements, i, j);
+            }
+        }
+        return permutedMatrix;
+    }
+
+    private static void makeBelowElementsZero(double[][] elements, int x, int y) {
+        int height = elements.length;
+        for (int i = x + 1; i < height; i++) {
+            linearCombinationOfRows(elements, i, x, i, 1, -elements[i][y] / elements[x][y], 0);
+        }
+    }
+
+    private static void linearCombinationOfRows(double[][] elements, int r1, int r2, int dst, double alpha,
+                                                double betta, double gamma) {
+        int width = elements[r1].length;
+        for (int i = 0; i < width; i++) {
+            elements[dst][i] = alpha * elements[r1][i] + betta * elements[r2][i] + gamma;
+        }
+    }
+
+    private static void linearCombinationOfRows(double[][] elements, int r1, int dst, double alpha, double gamma) {
+        linearCombinationOfRows(elements, r1, 0, dst, alpha, 0, gamma);
+    }
+
+    public static int putMaxElementHighestInColumn(double[][] elements, int x, int y) {
+        int height = elements.length;
+        int indexMax = x;
+        double max = Math.abs(elements[indexMax][y]);
+        for (int i = x; i < height; i++) {
+            if (Math.abs(elements[i][y]) > max) {
+                indexMax = i;
+                max = Math.abs(elements[indexMax][y]);
+            }
+        }
+        swapRows(elements, x, indexMax);
+        return indexMax;
+    }
+
+    public static void swapRows(double[][] elements, int r1, int r2) {
+        int width = elements[0].length;
+        double[] temp = new double[width];
+        System.arraycopy(elements[r1], 0, temp, 0, width);
+        System.arraycopy(elements[r2], 0, elements[r1], 0, width);
+        System.arraycopy(temp, 0, elements[r2], 0, width);
+    }
+
+    public static void swapRows(Matrix matrix, int r1, int r2) {
+        swapRows(matrix.getElements(), r1, r2);
     }
 }
