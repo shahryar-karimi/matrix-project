@@ -12,6 +12,11 @@ public class Matrix {
         this.height = elements.length;
         if (height > 0) this.width = elements[0].length;
         else this.width = 0;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                elements[i][j] = Math.round(elements[i][j] * 1_000_000) / 1_000_000.0;
+            }
+        }
     }
 
     public Matrix(int height, int width) {
@@ -43,7 +48,7 @@ public class Matrix {
     public void changeElement(int i, int j, double newDouble) throws Exception {
         if (isIndexInMatrix(i, j))
             throw new Exception("Index out of bound for matrix");
-        elements[i][j] = newDouble;
+        elements[i][j] = Math.round(newDouble * 1_000_000) / 1_000_000.0;;
     }
 
     @Override

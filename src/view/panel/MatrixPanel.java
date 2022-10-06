@@ -6,10 +6,7 @@ import operation.matrixListResultOperation.LUDecomposition;
 import operation.matrixListResultOperation.MatrixListResultOperation;
 import operation.matrixListResultOperation.ReduceRowEchelonForm;
 import operation.matrixResultOperation.*;
-import operation.numberResultOperation.Determinant;
-import operation.numberResultOperation.InnerDot;
-import operation.numberResultOperation.NumberResultOperation;
-import operation.numberResultOperation.Trace;
+import operation.numberResultOperation.*;
 import utils.SpecificMatrixName;
 import view.frame.MatrixListFrame;
 
@@ -138,6 +135,13 @@ public class MatrixPanel extends JPanel {
                 System.err.println(ex.getMessage());
             }
         });
+        buttonPanel.getRankButton().addActionListener(e -> {
+            try {
+                rankButtonActionPerformed();
+            } catch (Exception ex) {
+                System.err.println(ex.getMessage());
+            }
+        });
     }
 
     private void clearButtonActionPerformed() {
@@ -235,6 +239,12 @@ public class MatrixPanel extends JPanel {
     private void determinantButtonActionPerformed() throws Exception {
         numberResultOperation = new Determinant();
         ((Determinant) numberResultOperation).setMatrix(dataPanel.getMatrix());
+        operateNumberResultOperations();
+    }
+
+    private void rankButtonActionPerformed() throws Exception {
+        numberResultOperation = new Rank();
+        ((Rank) numberResultOperation).setMatrix(dataPanel.getMatrix());
         operateNumberResultOperations();
     }
 

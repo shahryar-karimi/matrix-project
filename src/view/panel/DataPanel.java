@@ -35,9 +35,7 @@ public class DataPanel extends JPanel {
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     DoubleTextField textField = new DoubleTextField();
-                    double element = matrix.element(i, j);
-                    element = Math.round(element * 1_000_000) / 1_000_000.0;
-                    textField.setText(element + "");
+                    textField.setText(matrix.element(i, j) + "");
                     textField.setBackground(Color.LIGHT_GRAY);
                     matrixTextFields[i][j] = textField;
                     add(textField);

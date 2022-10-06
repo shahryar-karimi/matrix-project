@@ -17,6 +17,7 @@ public class MatrixButtonPanel extends JPanel {
     private JButton luDecompositionButton;
     private JButton axbSolverButton;
     private JButton reduceRowEchelonFormButton;
+    private JButton rankButton;
 
     public MatrixButtonPanel() {
         initComponents();
@@ -38,10 +39,11 @@ public class MatrixButtonPanel extends JPanel {
         luDecompositionButton = new JButton("LU");
         axbSolverButton = new JButton("Ax=b");
         reduceRowEchelonFormButton = new JButton("RREF");
+        rankButton = new JButton("Rank");
         JButton[] buttons = new JButton[]{sumButton, multipleButton, timesButton, transposeButton,
                 inverseButton, traceButton, clearButton, innerDotButton,
                 determinantButton, axbSolverButton, luDecompositionButton, resultButton,
-                reduceRowEchelonFormButton};
+                reduceRowEchelonFormButton, rankButton};
         for (JButton button : buttons) {
             button.setFont(new java.awt.Font("Helvetica Neue", Font.PLAIN, 18));
             this.add(button);
@@ -98,5 +100,9 @@ public class MatrixButtonPanel extends JPanel {
 
     public JButton getReduceRowEchelonFormButton() {
         return reduceRowEchelonFormButton;
+    }
+
+    public JButton getRankButton() {
+        return rankButton;
     }
 }

@@ -3,7 +3,6 @@ package matrix;
 import utils.SpecificMatrixName;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class Matrices {
         try {
             for (int i = 0; i < height; i++)
                 for (int j = 0; j < width; j++)
-                    matrix.changeElement(i, j, fillNumber);
+                    matrix.changeElement(i, j, round(fillNumber));
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -46,9 +45,12 @@ public class Matrices {
         int height = matrix1.getHeight();
         int width = matrix1.getWidth();
         double[][] resultElements = new double[height][width];
-        for (int i = 0; i < height; i++)
-            for (int j = 0; j < width; j++)
-                resultElements[i][j] = matrix1.element(i, j) + matrix2.element(i, j);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                double input = matrix1.element(i, j) + matrix2.element(i, j);
+                resultElements[i][j] = round(input);
+            }
+        }
         return new Matrix(resultElements);
     }
 
@@ -67,7 +69,7 @@ public class Matrices {
             for (int j = 0; j < width; j++) {
                 resultElements[i][j] = 0;
                 for (int k = 0; k < length; k++) {
-                    resultElements[i][j] += matrix1.element(i, k) * matrix2.element(k, j);
+                    resultElements[i][j] += round(matrix1.element(i, k) * matrix2.element(k, j));
                 }
             }
         }
@@ -379,9 +381,9 @@ public class Matrices {
 
     public static List<Matrix> reduceRowEchelonForm(Matrix matrix) {
         double[][] resultElements = matrix.getElements().clone();
-        Matrix permutedMatrix = normalizeRows(resultElements);
+        normalizeRows(resultElements);
         normalizeColumns(resultElements);
-        return Arrays.asList(new Matrix(resultElements), permutedMatrix);
+        return List.of(new Matrix(resultElements));
     }
 
     private static void normalizeColumns(double[][] elements) {
@@ -404,23 +406,20 @@ public class Matrices {
         }
     }
 
-    private static Matrix normalizeRows(double[][] resultElements) {
+    private static void normalizeRows(double[][] resultElements) {
         int height = resultElements.length;
         int width = resultElements[0].length;
-        Matrix permutedMatrix = createI(height);
         int j = -1;
         for (int i = 0; i < height; i++) {
             j++;
             if (j == width) break;
-            int index = putMaxElementHighestInColumn(resultElements, i, j);
-            swapRows(permutedMatrix, i, index);
+            putMaxElementHighestInColumn(resultElements, i, j);
             if (resultElements[i][j] == 0) {
                 i--;
             } else {
                 makeBelowElementsZero(resultElements, i, j);
             }
         }
-        return permutedMatrix;
     }
 
     private static void makeBelowElementsZero(double[][] elements, int x, int y) {
@@ -435,11 +434,23 @@ public class Matrices {
         int width = elements[r1].length;
         for (int i = 0; i < width; i++) {
             elements[dst][i] = alpha * elements[r1][i] + betta * elements[r2][i] + gamma;
+            if (Math.abs(elements[dst][i]) < 0.000_001) {
+                elements[dst][i] = 0;
+            }
         }
+    }
+
+    private static void linearCombinationOfRows(Matrix matrix, int r1, int r2, int dst, double alpha,
+                                                double betta, double gamma) {
+        linearCombinationOfRows(matrix.getElements(), r1, r2, dst, alpha, betta, gamma);
     }
 
     private static void linearCombinationOfRows(double[][] elements, int r1, int dst, double alpha, double gamma) {
         linearCombinationOfRows(elements, r1, 0, dst, alpha, 0, gamma);
+    }
+
+    private static void linearCombinationOfRows(Matrix matrix, int r1, int dst, double alpha, double gamma) {
+        linearCombinationOfRows(matrix, r1, 0, dst, alpha, 0, gamma);
     }
 
     public static int putMaxElementHighestInColumn(double[][] elements, int x, int y) {
@@ -466,5 +477,29 @@ public class Matrices {
 
     public static void swapRows(Matrix matrix, int r1, int r2) {
         swapRows(matrix.getElements(), r1, r2);
+    }
+
+    public static int rank(Matrix matrix) {
+        Matrix r = reduceRowEchelonForm(matrix).get(0);
+        int result = 0;
+        int height = r.getHeight();
+        int width = r.getWidth();
+        int j = 0;
+        try {
+            for (int i = 0; i < height; i++) {
+                while (j < width && r.element(i, j) == 0)
+                    j++;
+                if (j == width) break;
+                result++;
+                j++;
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return result;
+    }
+
+    private static double round(double d) {
+        return Math.round(d * 1_000_000) / 1_000_000.0;
     }
 }
